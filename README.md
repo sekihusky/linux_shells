@@ -20,34 +20,41 @@ git pull --ff-only
 
 若主機上修改過腳本設定，更新前先用 `git status` 檢查，保留本機變更後再整合更新。
 
-### 範例：在 Linux 主機下載並使用 add_user_key.sh
+### 範例：已登入 Linux，直接下載單支腳本
 
-若儲存庫為公開狀態，可使用 `curl` 單獨下載，不需要安裝 Git 或設定 GitHub SSH 金鑰。在 Linux 主機的終端執行：
+假設你已經在 Linux 主機的終端，想從這個公開 GitHub 儲存庫下載 `add_user_key.sh` 使用，不需要 clone 整個專案，也不需要 GitHub SSH 金鑰。
 
-```bash
-# 下載 main 分支的腳本到獨立暫存目錄，並檢查 Bash 語法
-script_dir=$(mktemp -d) && \
-  curl -fL --output "$script_dir/add_user_key.sh" \
-    https://raw.githubusercontent.com/sekihusky/linux_shells/main/add_user_key.sh && \
-  bash -n "$script_dir/add_user_key.sh"
-```
-
-確認下載與語法檢查成功後，在同一個終端查看內容並執行：
+直接複製以下指令，會下載到目前目錄，語法檢查通過後執行（若已有同名檔案會覆蓋）：
 
 ```bash
-cat "$script_dir/add_user_key.sh"
-sudo bash "$script_dir/add_user_key.sh"
+curl -fL -o add_user_key.sh https://raw.githubusercontent.com/sekihusky/linux_shells/main/add_user_key.sh && \
+  bash -n add_user_key.sh && \
+  sudo bash add_user_key.sh
 ```
 
-依提示輸入帳號、貼上 SSH **公鑰**，並選擇是否授予 sudo 權限；既有帳號可選擇是否重設密碼。以 `bash` 執行不需要另外設定 `chmod +x`。若已用 root 登入，可省略 `sudo`。
+如果你已經以 **root** 登入，使用這個版本：
 
-完成後，保留目前連線，在自己的電腦另開終端測試（替換帳號、主機 IP 與私鑰路徑）：
+```bash
+curl -fL -o add_user_key.sh https://raw.githubusercontent.com/sekihusky/linux_shells/main/add_user_key.sh && \
+  bash -n add_user_key.sh && \
+  bash add_user_key.sh
+```
+
+若只想下載、暫時不執行：
+
+```bash
+curl -fL -o add_user_key.sh https://raw.githubusercontent.com/sekihusky/linux_shells/main/add_user_key.sh
+```
+
+需要下載其他腳本時，將上方「只下載」指令中的兩處 `add_user_key.sh` 換成該腳本的實際檔名。若出現 `curl: command not found`，Ubuntu／Debian 可先執行 `sudo apt update && sudo apt install -y curl`（root 可省略 `sudo`）。
+
+執行後依提示輸入帳號、貼上 SSH **公鑰**，並選擇是否授予 sudo 權限；既有帳號可選擇是否重設密碼。以 `bash` 執行不需要另外設定 `chmod +x`。
+
+完成後保留目前連線，在自己的電腦另開終端測試（替換帳號、主機 IP 與私鑰路徑）：
 
 ```bash
 ssh -i ~/.ssh/id_ed25519 your_user@your_server_ip
 ```
-
-若儲存庫是私人儲存庫，請改用上方的 SSH `git clone` 方式；該 Linux 主機須具備儲存庫存取權限。進入下載的 `linux_shells` 目錄後執行 `sudo bash add_user_key.sh`。
 
 ## 腳本索引
 
